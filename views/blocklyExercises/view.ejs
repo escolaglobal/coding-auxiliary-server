@@ -42,8 +42,9 @@
                     <canvas id="mycanvas" width='500px' height='500px'
                             <%if(exercise.background_image_url != undefined){%>
                             style="background: url(<%= exercise.background_image_url%>) no-repeat"
-                            <%}%>></canvas>
-                    ></canvas>
+                            <%}%> >
+                            </canvas>
+                    </canvas>
                 </div>
             </div>
         </div>
@@ -114,7 +115,7 @@
 
         //ir buscar os blocos
         $.ajax({
-            url: '/blocklyExercises/get-toolbox',
+            url: '../blocklyExercises/get-toolbox',
             method: 'GET',
             data: {
                 id: "<%= exercise._id%>"

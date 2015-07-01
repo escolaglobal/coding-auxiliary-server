@@ -50,11 +50,6 @@ router.get('/list', function(req, res){
     });
 });
 
-router.get('/uploadall', function(req, res){
-    
-        res.render('uploadall', {});
-});
-
 
 router.get('/list-with-ids', function(req, res){
     BlocksController.findByIds(req.query.ids, function(err, blocks){
@@ -80,7 +75,7 @@ router.post('/wizard', function(req, res){
 
     BlocksController.save(block, function(err, savedBlock){
         if (err) res.send(err);
-        res.redirect('view?id=' + savedBlock._id);
+        res.redirect('list');
     });
 });
 
@@ -116,7 +111,7 @@ router.post('/edit', function(req, res){
         if (err) res.send(err);
         BlocksController.update(req.body._id, req.body, function(err, numAffected){
             if (err) res.send(err);
-            res.redirect('view?id=' + req.body.id);
+            res.redirect('list');
         });
     });
 })

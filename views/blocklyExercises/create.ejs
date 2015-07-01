@@ -114,7 +114,7 @@
                             <div class="col-lg-10">
                                 <textarea id="validation_code" class="form-control" rows="3" name="validation_python_code"><% if(edit && exercise.validation_python_code != undefined){%><%= exercise.validation_python_code %><%}%></textarea>
                                 <span class="help-block">Código utilizado para validar o exercício. Estão disponíveis a variáveis "console", com o resultado apresentado na consola e "img_percentage",
-                                caso exista uma imagem, que representa a percentagem de incorreção da imagem do aluno (0 se a imagem for igual, 100 se for totalmente diferente). Esta função deve retornar um valor booleano (true ou false)</span>
+                                caso exista uma imagem, que representa a percentagem de incorreção da imagem do aluno (0.0 se a imagem for igual, 1.0 se for totalmente diferente). Esta função deve retornar um valor booleano (true ou false)</span>
                             </div>
                         </div>
 
@@ -198,22 +198,22 @@
 
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script type="text/javascript" src="../../javascripts/vendor/jquery-2.1.3.js"></script>
+<script type="text/javascript" src="../javascripts/vendor/jquery-2.1.3.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
-<script src = "/javascripts/concat.js"></script>
-<script src="/javascripts/wizardB.js"></script>
+<script src = "../javascripts/concat.js"></script>
+<script src="../javascripts/wizardB.js"></script>
 
 <script type="text/javascript" src="../javascripts/vendor/skulpt/skulpt.min.js" ></script>
 <script type="text/javascript" src="../javascripts/vendor/skulpt/skulpt-stdlib.js"></script>
 <script type="text/javascript" src="../javascripts/vendor/BootstrapWizard.js"></script>
 <script type="text/javascript" src="../javascripts/exercises/evaluation.js"></script>
-<script src="/javascripts/blockly/blockly_compressed.js"></script>
-<script src="/javascripts/blockly/blocks_compressed.js"></script>
-<script src="/javascripts/blockly/msg/js/pt.js"></script>
-<script src="/javascripts/blockly/python_generator.js"></script>
+<script src="../javascripts/blockly/blockly_compressed.js"></script>
+<script src="../javascripts/blockly/blocks_compressed.js"></script>
+<script src="../javascripts/blockly/msg/js/pt.js"></script>
+<script src="../javascripts/blockly/python_generator.js"></script>
 
 <link rel="stylesheet" href="../stylesheets/vendor/codemirror.css">
 <script src="../javascripts/vendor/codemirror-compressed.js"></script>
@@ -235,7 +235,7 @@
             blockIds.push($(this).attr('value'));
         });
         $.ajax({
-            url: '/blocks/list-with-ids',
+            url: '../blocks/list-with-ids',
             method: 'GET',
             data: {
                 ids: blockIds
@@ -279,7 +279,7 @@
                     });
                     //ir buscar os blocos
                     $.ajax({
-                        url: '/blocks/list-with-ids',
+                        url: '../blocks/list-with-ids',
                         method: 'GET',
                         data: {
                             ids: blockIds
@@ -411,7 +411,7 @@
             if(finalCodeEditor != undefined) code += finalCodeEditor.getValue();
             console.log(code);
             $('#mycanvas').css('background', "url(" + $('#input-background-image').val() + ") no-repeat");
-            runit(false, code);
+            runit(false, code,true);
             $('#validation-image-input').val(document.getElementById("mycanvas").toDataURL());
         });
     });

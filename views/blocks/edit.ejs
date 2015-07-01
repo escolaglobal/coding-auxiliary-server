@@ -4,13 +4,13 @@
 <head>
     <meta charset="utf-8">
 
-    <script src="../javascripts/blockly/block_factory/factory.js"></script>
+    <script src="../javascripts/blockly/block_factory/factory-edit.js"></script>
     <script src="../javascripts/blockly/blockly_compressed.js"></script>
     <script src="../javascripts/blockly/msg/js/pt.js"></script>
     <script src="../javascripts/blockly/block_factory/blocks.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script src="/javascripts/vendor/bootstrap.min.js"></script>
-    <link href="/stylesheets/bootstrap.min.css" rel="stylesheet">
+    <script src="../javascripts/vendor/bootstrap.min.js"></script>
+    <link href="../stylesheets/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../stylesheets/block_factory_editing.css">
     <link rel="stylesheet" href="../stylesheets/prettify.css">
     <script src="../javascripts/prettify.js"></script>
@@ -18,48 +18,28 @@
 
 
 <body>
-
-<div id="edit">
-    <ul class="nav nav-pills">
-        <li><a href="#tab-simple" data-toggle="tab">Editor Simples</a></li>
-        <li><a href="#tab-complete" data-toggle="tab">Editor Completo</a></li>
-    </ul>
-
-    <div class="tab-content">
-        <div class="tab-pane" id="tab-simple" onclick="hide_toolbox()">
-            <h1>Editor Simples</h1>
-            <form method="POST">
-                <input type="hidden" name="_id" value="<%= block._id %>"/>
-                <label>Nome:</label>
-                <input type="text" name="name" value="<%= block.name %>"/>
-                <br>
-                <label>Estrutura do bloco:</label>
-                <br>
-                <textarea name="structure" rows="10" cols="70" data-role="none"><%= block.structure %></textarea>
-                <br>
-                <label>Código do Workspace Blockly(xml):</label>
-                <br>
-                <textarea  name="init_code" rows="10" cols="70" data-role="none"><%= block.init_code %></textarea>
-                <br>
-                <label>Funcionalidade do bloco:</label>
-                <br>
-                <textarea name="functionality" id="func_code" rows="10" cols="70" data-role="none"><%= block.functionality %></textarea>
-                <br>
-                <button type="submit">Submeter</button>
-            </form>
-        </div>
-
-        <div class="tab-pane" id="tab-complete" onclick="show_toolbox()">
+    <div id="edit">
             <div id="rootwizard">
                 <form id="block-factory-form" class="form-horizontal" method ="POST">
-                    <ul>
-                        <li><a href="#tab-block-style" data-toggle="tab" onclick="show_toolbox()">Aparência</a></li>
-                        <li><a href="#tab-block-code" data-toggle="tab">Funcionalidade</a></li>
-                    </ul>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="navbar navbar-default">
+                                    <div class="navbar-inner">
+                                            <ul class="nav navbar-nav">
+                                                <li><a href="#tab-block-style" data-toggle="tab" onclick="show_toolbox()">Aparência</a></li>
+                                                <li><a href="#tab-block-code" data-toggle="tab">Funcionalidade</a></li>
+                                            </ul>
+                                            <ul class="nav navbar-form navbar-left">
+                                                <button type="submit" class="btn btn-default">Submeter</button>
+                                            </ul>
+                                    </div>
 
-                    <div class="form-group">
-                        <button type="submit">Submeter</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
 
                     <div class="tab-content">
 
@@ -141,18 +121,20 @@
                                 <input type="hidden" name="structure" id="form-structure"/>
                                 <input type="hidden" name="edit_state" id="form-edit-state"/>
                                 <input type="hidden" name="name" id="form-name"/>
-                                <input type="hidden" name="init_code" id="form-init_code"/>  <!--This holds the xml code of the blockly workspace-->
+                                <input type="hidden" name="init_code" id="init_code" value="<%= block.init_code %>"/>  <!--This holds the xml code of the blockly workspace-->
+                                <input type="hidden" id="func_code" value="<%= block.functionality  %>"/>
+                                <input type="hidden" id="form-id" name="_id" value="<%= block._id %>"/>
                             </div>
-                            <h3>Código actual:</h3>
-                                <textarea id="block_code_old"></textarea>
+                            <h3>Código antigo:</h3>
+                            <textarea id="block_code_old"></textarea>
                         </div>
                     </div>
 
                 </form>
             </div>
-        </div>
     </div>
-</div>
+
+
 
 
 <xml id="toolbox" style="display: none">
@@ -207,7 +189,7 @@
 
 <script type="text/javascript">
 
-    var codeEditor;
+    var codeEditor, oldCodeEditor;
 
     $(document).ready(function() {
         $('#rootwizard').bootstrapWizard({
@@ -216,7 +198,7 @@
                 if (index == 1) {
                     var code = document.getElementById('generatorPre').textContent;
                     document.getElementById('block_code').value = code;
-                    document.getElementById('block_code_old').value = document.getElementById("func_code").textContent;
+                    document.getElementById('block_code_old').value = $("#func_code").val();
 
                     $('.blocklyToolboxDiv').hide();
 
@@ -225,15 +207,15 @@
                             lineNumbers: true,
                             viewportMargin: Infinity
                         });
-
-                        codeEditor = CodeMirror.fromTextArea(block_code_old, {
+                    }else {
+                        var code = String(document.getElementById('generatorPre').textContent);
+                        codeEditor.setValue(code);
+                    }
+                    if(oldCodeEditor == undefined) {
+                        oldCodeEditor = CodeMirror.fromTextArea(block_code_old, {
                             lineNumbers: true,
                             viewportMargin: Infinity
                         });
-                    } else {
-                        var code = String(document.getElementById('generatorPre').textContent);
-                        console.log(code);
-                        codeEditor.setValue(code);
                     }
                 }
             }
@@ -250,18 +232,19 @@
 
     $('#block-factory-form').submit(function(event){
         var data = {};
-        var workspace = Blockly.getMainWorkspace();
+        var workspace = mainWorkspace;
         var xml = Blockly.Xml.workspaceToDom(workspace);
         var workspace_xml = Blockly.Xml.domToText(xml);
-        var name_temp = document.getElementById('languagePre').getElementsByClassName('str')[0].innerText;
+
+        var name_temp = document.getElementById('languagePre').getElementsByClassName('str')[0].textContent;
         data.name = name_temp.substring(1, name_temp.length - 1);
         data.functionality = document.getElementById('block_code').value;
         data.init_code = workspace_xml;
-        data.structure = document.getElementById('languagePre').innerText;
+        data.structure = document.getElementById('languagePre').textContent;
         console.log(data);
         $('#form-structure').val(data.structure);
         $('#form-name').val(data.name);
-        $('#form-init_code').val(data.init_code);
+        $('#init_code').val(data.init_code);
     });
 
 </script>

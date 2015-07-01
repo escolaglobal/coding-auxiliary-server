@@ -18,8 +18,10 @@ function getCode(main_code)
     return ini_code + '\n' + prog + '\n' + fin_code;
 }
 
-function runit(show,main_code) { 
-    var full_code =  getCode(main_code);
+function runit(show,main_code,no_complete) { 
+    if(no_complete==true)
+        var full_code =  main_code;
+    else var full_code = getCode(main_code);
     var canvas = $('#mycanvas');
     canvas[0].getContext("2d").clearRect ( 0 , 0 , canvas.width, canvas.height );
 

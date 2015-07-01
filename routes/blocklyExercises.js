@@ -41,7 +41,6 @@ router.get('/duplicate', function(req, res){
 });
 
 router.get('/wizard', function(req, res){
-    req.query.edXid='PENIS, lol'
     if (req.query.edXid != undefined) {
         BlocksController.findAll(function (err, blocks) {
             BlocklyExercisesController.getByEdXId(req.query.edXid, function(err, exercise){

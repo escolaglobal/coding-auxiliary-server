@@ -26,7 +26,7 @@ function compare()
 
     return $.ajax({
         type: "GET",
-        url: "/blocklyExercises/compare",
+        url: "compare",
         data: {
             image1:image,
             exercise_id:$("#initial_code").attr("data-exercise-id")
@@ -39,6 +39,9 @@ function compare()
 /* Sets the old state for the students exercises */
 function setState(stateStr) {
     stateStr = arguments.length === 1 ? arguments[0] : arguments[1];
+     if (Blockly.mainWorkspace !== null) {
+            Blockly.mainWorkspace.clear();
+        }
     var state = JSON.parse(stateStr);
     var xml = Blockly.Xml.textToDom(state.code);
     Blockly.Xml.domToWorkspace(workspace, xml);

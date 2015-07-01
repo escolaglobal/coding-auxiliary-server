@@ -2,7 +2,7 @@
 <html>
 <head>
     <link rel="stylesheet" href="../stylesheets/vendor/codemirror.css">
-    <link rel="stylesheet" type="text/css" href="../../stylesheets/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/bootstrap.min.css">
     <style>
         #mycanvas {
             height: 500px;
@@ -155,8 +155,8 @@
 <div style="height: 50px"></div>
 </body>
 
-<script type="text/javascript" src="../../javascripts/vendor/jquery-2.1.3.js"></script>
-<script type="text/javascript" src="../../javascripts/vendor/bootstrap.min.js"></script>
+<script type="text/javascript" src="../javascripts/vendor/jquery-2.1.3.js"></script>
+<script type="text/javascript" src="../javascripts/vendor/bootstrap.min.js"></script>
 <script type="text/javascript" src="../javascripts/vendor/BootstrapWizard.js"></script>
 <script type="text/javascript" src="../javascripts/vendor/skulpt/skulpt.min.js" ></script>
 <script type="text/javascript" src="../javascripts/vendor/skulpt/skulpt-stdlib.js"></script>
@@ -251,7 +251,7 @@
             if(finalCodeEditor != undefined) code += finalCodeEditor.getValue();
 
             $('#mycanvas').css('background', "url(" + $('#input-background-image').val() + ") no-repeat");
-            runit(false, code);
+            runit(false, code,true);
             $('#validation-image-input').val(document.getElementById("mycanvas").toDataURL());
         });
 

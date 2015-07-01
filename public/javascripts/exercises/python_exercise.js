@@ -24,7 +24,7 @@ function compare()
 
     return $.ajax({
         type: "GET",
-        url: "/pythonExercises/compare",
+        url: "compare",
         data: {
             image1:image,
             exercise_id:$("#code").attr("data-exercise-id")
