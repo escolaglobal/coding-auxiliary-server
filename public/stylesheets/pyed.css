@@ -1,0 +1,61 @@
+body, html {
+	height:100%;
+}
+
+#exec {
+	margin-left: 9px;
+	background-color:#92bf21;
+	border-color: #92bf21;
+
+}
+
+#output {
+	width: 100%;
+	height: 200px;
+	margin: 0px;
+}
+
+
+.modal-dialog
+{
+	width: 500px;
+}
+
+.modal-body {
+	position: relative;
+	padding: 0px;
+}
+
+#closem {
+	background-color: #92bf21;
+	border-color: #92bf21;
+}
+
+#mycanvas {
+	height: 500px;
+	width: 500px;
+	border: solid 1px black;
+}
+
+#initial_code, #final_code{
+	display: none;
+}
+
+.alert {
+	background-color: #92bf21;
+	border-color: #92bf21;
+	font-size: 120%;	
+}
+
+.CodeMirror{
+	border-style: solid;
+	border-width: 1px;
+	border-color: black;
+	margin-bottom: 5px;
+}
+
+html, body {
+  margin: 0px;
+  padding: 0px;
+  border: 0px;
+}

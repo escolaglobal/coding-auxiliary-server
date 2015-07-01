@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body>
+    <h1>Blocos Disponíveis na Base de Dados:</h1>
+    <% for(var i = 0; i < blocks.length; i++){ %>
+        <label><%= blocks[i].name %></label>
+        <a href="/blocks/edit?id=<%= blocks[i].id %>">Editar</a>
+        <a href="/blocks/view?id=<%= blocks[i].id %>">Ver</a>
+        <br>
+    <%}%>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="../javascripts/vendor/jquery-2.1.3.js"></script>
+    <script type="text/javascript" src="../javascripts/vendor/bootstrap.min.js"></script>
+    <script src="../javascripts/blockly/blockly_compressed.js"></script>
+    <script src="../javascripts/blockly/blocks_compressed.js"></script>
+    <script src="../javascripts/blockly/msg/js/pt.js"></script>
+    <script src="../javascripts/blockly/python_generator.js"></script>
+    <script src="../javascripts/concat.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../stylesheets/skulpt/default.css">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/pyed.css">
+
+    <link rel="stylesheet" type="text/css" href="../stylesheets/bootstrap.min.css">
+    <link rel='stylesheet' href='../stylesheets/styleBlockly.css' />
+
+    <xml  id="custom-toolbox" style="display: none" ></xml>
+    <script id="custom-script"></script>
+</head>
+<body>
+
+<!--NAO MEXER-->
+<pre id="initial_code" data-exercise-id="<%= exercise._id %>"><%= exercise.init_python_code%>
+</pre>
+<pre id="final_code"><%= exercise.final_python_code%>
+</pre>
+
+<!--falta preview-->
+
+<!--FIM NAO MEXER-->
+
+<div class="container">
+    <div class="modal fade" id="myModal" role="dialog" aria-labelledby="myModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title text-center " id="myModalLabel">Resultado visual</h4>
+                </div>
+                <div class="modal-body">
+                    <canvas id="mycanvas" width='500px' height='500px'
+                            <%if(exercise.background_image_url != undefined){%>
+                            style="background: url(<%= exercise.background_image_url%>) no-repeat"
+                            <%}%>></canvas>
+                    ></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div id="blocklyArea" class="col-lg-12" sytle="height: 500px">
+            <div id="blocklyDiv">
+            </div>
+            <button id="show-image-button" class="btn btn-success btn-xs">Ver imagem</button>
+        </div>
+        <div class="col-lg-12">
+            <h3>Resultado escrito</h3>
+            <pre id="output"></pre>
+        </div>
+
+    </div>
+</div>
+
+<div id="initial_state">
+</div>
+
+
+
+<div id="blocklyDiv" style="position: absolute"></div>
+
+
+<script>
+    var workspace;
+    $(document).ready(function() {
+
+        $(document).on('click', '#show-image-button', function(){
+            $('#myModal').modal('show');
+        });
+
+        function htmlDecode(input) {
+            var e = document.createElement('div');
+            e.innerHTML = input;
+            return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+        }
+
+        var blocklyArea = document.getElementById('blocklyArea');
+        var blocklyDiv = document.getElementById('blocklyDiv');
+        workspace = Blockly.inject(blocklyDiv,
+                {
+                    toolbox: document.getElementById('custom-toolbox'),
+                    trashcan: true,
+                    scrollbars: true
+                });
+        var onresize = function (e) {
+            // Compute the absolute coordinates and dimensions of blocklyArea.
+            var element = blocklyArea;
+            var x = 0;
+            var y = 0;
+            do {
+                x += element.offsetLeft;
+                y += element.offsetTop;
+                element = element.offsetParent;
+            } while (element);
+            // Position blocklyDiv over blocklyArea.
+            blocklyDiv.style.left = x + 'px';
+            blocklyDiv.style.top = y + 'px';
+            blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
+            blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
+        };
+        window.addEventListener('resize', onresize, false);
+        onresize();
+
+        //ir buscar os blocos
+        $.ajax({
+            url: '/blocklyExercises/get-toolbox',
+            method: 'GET',
+            data: {
+                id: "<%= exercise._id%>"
+            },
+            success: function (data) {
+                $('#custom-script').html("");
+                for (var i = 0; i < data.length; i++) {
+                    $('#custom-toolbox').append('<block type="' + data[i].name + '"></block>');
+                    $('#custom-script').append(data[i].structure + '\n' + data[i].functionality);
+                }
+                eval($('#custom-script').text());
+                workspace.updateToolbox($('#custom-toolbox').get(0));
+            }
+        });
+
+        var xml = Blockly.Xml.textToDom(htmlDecode("<%= exercise.initial_state%>"));
+        Blockly.Xml.domToWorkspace(workspace, xml);
+
+
+        var blockIds = [];
+        $('.block-checkbox:checked').map(function () {
+            blockIds.push($(this).attr('value'));
+        });
+
+    });
+
+
+
+</script>
+
+<script type="text/javascript" src="../javascripts/vendor/skulpt/skulpt.min.js" ></script>
+<script type="text/javascript" src="../javascripts/vendor/skulpt/skulpt-stdlib.js"></script>
+<script type="text/javascript" src="../javascripts/vendor/jschannel.js"></script>
+<script type="text/javascript" src="../javascripts/exercises/evaluation.js"></script>
+<script type="text/javascript" src="../javascripts/exercises/blockly_exercise.js"></script>
+</body>
+
+</html>

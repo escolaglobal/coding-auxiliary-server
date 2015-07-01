@@ -1,0 +1,72 @@
+html, body {
+    height: 100%;
+    width: 100%;
+    background-color: white;
+    margin: 0px;
+}
+
+.form-control {
+    width: 50%;
+}
+
+.tc {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#tp {
+    margin-left: auto;
+    margin-right: auto;
+    height: 175px;
+}
+
+#tp:focus, #is:focus, #ipc:focus, #fpc:focus, #vcode:focus {
+    border:1px solid #92bf21;
+    outline: none !important;
+    box-shadow: 0 0 10px #92bf21;
+}
+
+#canvas-container {
+    margin-top: 20px;
+    width: 100%;
+    text-align:center;
+}
+
+canvas {
+    background-color: #F0F0F0 ;
+    width: 50%;
+    display: inline;
+}
+
+canvas#viewport { border: 1px solid white; width: 900px; }
+
+#next {
+    margin-right: 50px;
+    float: right;
+    background-color: #92bf21;
+    border-color: #92bf21;
+}
+
+#back {
+	margin-left: 50px;
+    background-color: #92bf21;
+    border-color: #92bf21;
+}
+
+#vcode {
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 3%;
+}
+
+#crea {
+	margin-left: 45%;
+	background-color: #92bf21;
+	border-color: #92bf21;
+}
+
+#tortoise {
+    margin-left: 45%;
+}

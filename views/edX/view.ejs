@@ -1,0 +1,35 @@
+<% if (exerciseRoute == "pythonExercises") {%><!--python-tag--><% } else {%><!--blockly-tag--><% } %>
+<!--exercise id: <%- exercise.id_edx%>-->
+<problem>
+<% for(i = 0; i < split_lines_enun.length; i++){ %>
+<%=split_lines_enun[i]%><br/><%}%>
+<script type="loncapa/python">
+<![CDATA[
+import json
+def codefn(e, ans):
+
+    par = json.loads(ans)
+
+    answer = json.loads(par["answer"])
+    console = answer["console"]
+    <%if(exercise.turtle) { %>
+    img_percentage = float(answer["image"])
+    <% } %><% for(i = 0; i < split_lines.length; i++){ %>
+<%-"    "+split_lines[i]%><% } %>
+]]>
+</script>
+<p></p>
+<customresponse cfn="codefn">
+    <jsinput gradefn="code.getGrade"
+             get_statefn="code.getState"
+             set_statefn="code.setState"
+             width="100%"
+             <% if(exerciseRoute == "blocklyExercises"){%>
+                 height="760px"
+             <%}else{%>
+                height="600px"
+             <%}%>
+             html_file="http://<%-hostname%><%-baseRoute%>/<%-exerciseRoute%>/view?id=<%-exercise._id%>"
+             sop="false"/>
+</customresponse>
+</problem>

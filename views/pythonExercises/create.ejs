@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="../stylesheets/vendor/codemirror.css">
+    <link rel="stylesheet" type="text/css" href="../../stylesheets/bootstrap.min.css">
+    <style>
+        #mycanvas {
+            height: 500px;
+            width: 500px;
+            background-repeat: no-repeat;
+            background-size: cover;
+            border: 1px solid black;
+        }
+
+        #output{
+            height: 500px;
+        }
+        .CodeMirror {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="error-notification" class="alert alert-dismissible alert-danger" style="display: none; position: fixed; top: 1em; right: 1em; z-index:999;">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <span id="error-text"></span>
+    </div>
+    <div id="success-notification" class="alert alert-dismissible alert-success" style="display: none; position: fixed; top: 1em; right: 1em; z-index:999;">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <strong>Sucesso!</strong> O exercício foi gravado
+    </div>
+    <div class="row">
+
+        <div class="col-lg-12">
+
+            <form id="python-form" class="form-horizontal" method ="POST">
+                <div class="navbar navbar-default">
+                    <div class="navbar-inner">
+                        <div class="container">
+                            <ul class="nav navbar-nav">
+                                <li><a href="#tab-options" data-toggle="tab">Opções</a></li>
+                                <li><a href="#tab-code" data-toggle="tab">Código</a></li>
+                                <li><a href="#tab-turtle" data-toggle="tab">Tartaruga</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="id_edx" value="<%= edXid %>"/>
+
+                <div class="tab-content">
+                    <div class="tab-pane" id="tab-options"> <!-- TAB opcoes -->
+                        <div class="form-group">
+                            <label for="textArea" class="col-lg-2 control-label">Enunciado: </label>
+                            <div class="col-lg-10">
+                                <textarea class="form-control" rows="3" id="text"><% if(edit && exercise.text != undefined){%><%=exercise.text%><%}%></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">Tem tartaruga: </label>
+                            <div class="col-lg-10">
+                                <div class="checkbox">
+                                    <input id="turtle-checkbox" type="checkbox" <% if(edit && exercise.turtle != undefined  && exercise.turtle ){%> checked="checked" <%}%> >
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="pull-right">
+                                <button type="submit" class="btn btn-primary save-button">Guardar</button>
+                                <button disabled="disabled" class="btn btn-primary loading-button" style="display: none">A guardar...</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="tab-code"> <!-- TAB codigo -->
+                        <div class="form-group">
+                            <label for="textArea" class="col-lg-2 control-label">Código inicial: </label>
+                            <div class="col-lg-10">
+                                <textarea id="initial_code" class="form-control" rows="3" name="init_python_code"><% if(edit && exercise.init_python_code != undefined){%><%=exercise.init_python_code%><%}%></textarea>
+                                <span class="help-block">Código executado antes do código inserido pelo aluno.</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="textArea" class="col-lg-2 control-label">Estado inicial: </label>
+                            <div class="col-lg-10">
+                                <textarea id="initial_state" class="form-control" name="initial_state"><% if(edit && exercise.initial_state != undefined){%><%=exercise.initial_state%><%}%></textarea>
+                                <span class="help-block">Código que aparece inicialmente ao aluno.</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="textArea" class="col-lg-2 control-label">Código final: </label>
+                            <div class="col-lg-10">
+                                <textarea id="final_code" class="form-control" rows="3" name="final_python_code"><% if(edit && exercise.final_python_code != undefined){%><%=exercise.final_python_code%><%}%></textarea>
+                                <span class="help-block">Código executado depois do código inserido pelo aluno e antes da validação.</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="textArea" class="col-lg-2 control-label">Código validação: </label>
+                            <div class="col-lg-10">
+                                <textarea id="validation_code" class="form-control" rows="3" name="validation_python_code"><% if(edit && exercise.validation_python_code != undefined){%><%=exercise.validation_python_code%><%}%></textarea>
+                                <span class="help-block">Código utilizado para validar o exercício. Estão disponíveis a variáveis "console", com o resultado apresentado na consola e "img_percentage",
+                                caso exista uma imagem, que representa a percentagem de incorreção da imagem do aluno (0 se a imagem for igual, 1 se for totalmente diferente - recomendação: 0.01). Esta função deve retornar um valor booleano (true ou false)</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="pull-right">
+                                <button type="submit" class="btn btn-primary save-button">Guardar</button>
+                                <button disabled="disabled" class="btn btn-primary loading-button" style="display: none">A guardar...</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="tab-turtle"> <!-- TAB tartaruga -->
+                        <div class="form-group">
+                            <label for="input-background-image" class="col-lg-2 control-label">Imagem de fundo: </label>
+                            <div class="col-lg-10">
+                                <input name="background_image_url" class="form-control" id="input-background-image" placeholder="URL" type="text"<% if(edit && exercise.background_image_url != undefined){%> value="<%=exercise.background_image_url%>" <%}%>>
+                            </div>
+                        </div>
+                        <input id="validation-image-input" type="hidden" name="validation_image" <% if(edit && exercise.validation_image != undefined){%> value="<%=exercise.validation_image%>" <%}%>/>
+                        <div class="form-group">
+                            <div class="col-lg-12">
+                                <textarea id="turtle_code" class="form-control" rows="3" ></textarea>
+                                <span class="help-block">Consulte as operações da biblioteca turtle <a href="https://docs.python.org/2/library/turtle.html" target="_blank">aqui</a></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-6">
+                                <h2>Imagem</h2>
+                                <div id="turtle-canvas">
+                                    <canvas id="mycanvas" width="500" height="500"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <h2>Output</h2>
+                                <pre id="output"></pre>
+                            </div>
+
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="btn-group pull-right">
+                                <button class="btn btn-success" id="turtle-execute">Executar</button>
+                                <button type="submit" class="btn btn-primary save-button">Guardar</button>
+                                <button disabled="disabled" class="btn btn-primary loading-button" style="display: none">A guardar...</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div style="height: 50px"></div>
+</body>
+
+<script type="text/javascript" src="../../javascripts/vendor/jquery-2.1.3.js"></script>
+<script type="text/javascript" src="../../javascripts/vendor/bootstrap.min.js"></script>
+<script type="text/javascript" src="../javascripts/vendor/BootstrapWizard.js"></script>
+<script type="text/javascript" src="../javascripts/vendor/skulpt/skulpt.min.js" ></script>
+<script type="text/javascript" src="../javascripts/vendor/skulpt/skulpt-stdlib.js"></script>
+<script type="text/javascript" src="../javascripts/exercises/evaluation.js"></script>
+<script src="../javascripts/vendor/codemirror-compressed.js"></script>
+
+<script>
+    var initialCodeEditor, finalCodeEditor, validationCodeEditor, initialStateEditor, turtleCodeEditor;
+    $(document).ready(function() {
+
+        $('#python-form').bootstrapWizard({
+            'tabClass': '',
+            'onTabShow': function(tab, navigation, index){
+                if(index == 1) {
+                    if (initialCodeEditor == undefined) {
+                        initialCodeEditor = CodeMirror.fromTextArea(initial_code, {
+                            lineNumbers: true,
+                            viewportMargin: Infinity
+                        });
+                    }
+
+                    if (finalCodeEditor == undefined) {
+                        finalCodeEditor = CodeMirror.fromTextArea(final_code, {
+                            lineNumbers: true,
+                            viewportMargin: Infinity
+                        });
+                    }
+
+                    if (validationCodeEditor == undefined) {
+                        validationCodeEditor = CodeMirror.fromTextArea(validation_code, {
+                            lineNumbers: true,
+                            viewportMargin: Infinity
+                        });
+                    }
+
+                    if (initialStateEditor == undefined) {
+                        initialStateEditor = CodeMirror.fromTextArea(initial_state, {
+                            lineNumbers: true,
+                            viewportMargin: Infinity
+                        });
+                    }
+                }else if(index == 2){
+                    if (turtleCodeEditor == undefined) {
+                        turtleCodeEditor = CodeMirror.fromTextArea(turtle_code, {
+                            lineNumbers: true,
+                            viewportMargin: Infinity
+                        });
+                    }
+                }
+            }
+        });
+
+        $('#python-form').bootstrapWizard('hide', 2);
+
+        if($('#turtle-checkbox').is(':checked')){
+            $('#python-form').bootstrapWizard('display', 2);
+        };
+
+        $('#turtle-checkbox').click(function() {
+            var $this = $(this);
+            var turtle_default = "import turtle\n"+
+                    "t = turtle.Turtle()\nt.speed(1)\nt.shape(\"turtle\")\n";
+            // $this will contain a reference to the checkbox
+            if ($this.is(':checked')) {
+                $('#python-form').bootstrapWizard('display', 2);
+                if(initialCodeEditor!=undefined){
+                    initialCodeEditor.setValue(turtle_default+
+                    initialCodeEditor.getValue());
+                }else
+                {
+                    $("#initial_code").val(turtle_default+$("#initial_code").val());
+                }
+                
+            } else {
+                $('#python-form').bootstrapWizard('hide', 2);
+                if(initialCodeEditor!=undefined){
+                    if(initialCodeEditor.getValue()==turtle_default)
+                    initialCodeEditor.setValue("");
+                }else
+                {
+                    if($("#initial_code").val()==turtle_default)
+                        $("#initial_code").val("");
+                }
+            }
+        });
+
+        $('#turtle-execute').click(function(event){
+            event.preventDefault();
+            var code = "";
+            if(initialCodeEditor != undefined) code += initialCodeEditor.getValue() + "\n";
+            code += turtleCodeEditor.getValue()  + "\n";
+            if(finalCodeEditor != undefined) code += finalCodeEditor.getValue();
+
+            $('#mycanvas').css('background', "url(" + $('#input-background-image').val() + ") no-repeat");
+            runit(false, code);
+            $('#validation-image-input').val(document.getElementById("mycanvas").toDataURL());
+        });
+
+        var pythonForm = $('#python-form');
+        pythonForm.submit(function(event){
+            event.preventDefault();
+            $.ajax({
+                type: 'POST',
+                data: {
+                    id_edx: $('#id_edx').val(),
+                    text: $('#text').val(),
+                    turtle: $('#turtle-checkbox').is(':checked'),
+                    init_python_code: initialCodeEditor==undefined ? $("#initial_code").val() : initialCodeEditor.getValue(),
+                    initial_state: initialStateEditor==undefined ? $("#initial_state").val() : initialStateEditor.getValue(),
+                    final_python_code: finalCodeEditor==undefined ? $("#final_code").val() : finalCodeEditor.getValue(),
+                    validation_python_code: validationCodeEditor==undefined ? $("#validation_code").val() : validationCodeEditor.getValue(),
+                    background_image_url: $('#input-background-image').val(),
+                    validation_image: $('#validation-image-input').val()
+                },
+                beforeSend: function(){
+                    $('.save-button').hide();
+                    $('.loading-button').show();
+                    $('#error-notification').hide();
+                    $('#success-notification').hide();
+                },
+                error: function(jqXHR, textStatus, errorThrown){
+                    $('#error-notification').find('#error-text').text(jqXHR.responseText);
+                    $('#error-notification').show();
+                    $('.save-button').show();
+                    $('.loading-button').hide();
+                },
+                success: function(data, textStatus, xhr){
+                    $('#success-notification').show();
+                    $('.save-button').show();
+                    $('.loading-button').hide();
+                }
+            });
+        });
+    });
+
+</script>
+</html>

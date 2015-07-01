@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+
+<head>
+    <meta charset="utf-8">
+
+    <script src="../javascripts/blockly/block_factory/factory.js"></script>
+    <script src="../javascripts/blockly/blockly_compressed.js"></script>
+    <script src="../javascripts/blockly/msg/js/pt.js"></script>
+    <script src="../javascripts/blockly/block_factory/blocks.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="/javascripts/vendor/bootstrap.min.js"></script>
+    <link href="/stylesheets/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../stylesheets/block_factory.css">
+    <link rel="stylesheet" href="../stylesheets/prettify.css">
+    <script src="../javascripts/prettify.js"></script>
+</head>
+
+
+<body>
+
+    <div id="rootwizard">
+        <form id="block-factory-form" class="form-horizontal" method ="POST">
+            <ul>
+                <li><a href="#tab-block-style" data-toggle="tab" onclick="show_toolbox()">Aparência</a></li>
+                <li><a href="#tab-block-code" data-toggle="tab">Funcionalidade</a></li>
+            </ul>
+
+            <div class="form-group">
+                <button type="submit">Submeter</button>
+            </div>
+
+            <div class="tab-content">
+
+                <div class="tab-pane" id="tab-block-style">
+                    <div class="form-group">
+                        <table>
+                            <tr>
+                                <td width="50%" height="5%">
+                                    <h1>Construtor de blocos</h1>
+                                </td>
+                                <td width="50%" height="5%">
+                                    <table>
+                                        <tr>
+                                            <td style="vertical-align: bottom;">
+                                                <h3>Pré-visualização:
+                                                    <select style="display: none" id="direction">
+                                                        <option value="ltr">Alinhar à esquerda</option>
+                                                        <option value="rtl">Alinhar à direita</option>
+                                                    </select>
+                                                </h3>
+                                            </td>
+                                            <td style="vertical-align: middle; text-align: right;">
+                                                <button id="helpButton" title="View documentation in new window.">
+                                                    <span>Ajuda</span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="50%" height="95%" style="padding: 2px;">
+                                    <div id="blockly"></div>
+                                </td>
+                                <td width="50%" height="95%">
+                                    <table>
+                                        <tr>
+                                            <td height="45%">
+                                                <div id="preview"></div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td height="5%">
+                                                <h3>Código visual do bloco:</h3>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td height="45%">
+                                                <pre id="languagePre"></pre>
+                                            </td>
+                                        </tr>
+                                        <tr style="display: none">
+                                            <td height="0%">
+                                                <h3>Generator stub:
+                                                    <select id="language">
+                                                        <option value="Python">Python</option>
+                                                    </select>
+                                                </h3>
+                                            </td>
+                                        </tr>
+                                        <tr style="display: none">
+                                            <td height="0%">
+                                                <pre id="generatorPre"></pre>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="tab-block-code">
+                    <div class="form-group">
+
+                        <h3>Insira o código que o bloco deve executar:</h3>
+                        <p>Editar "..."</p>
+
+                        <textarea class="form-control" id="block_code" name="functionality"></textarea>
+                        <input type="hidden" name="structure" id="form-structure"/>
+                        <input type="hidden" name="edit_state" id="form-edit-state"/>
+                        <input type="hidden" name="name" id="form-name"/>
+                        <input type="hidden" name="init_code" id="form-init_code"/>  <!--This holds the xml code of the blockly workspace -->
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+
+    <xml id="toolbox" style="display: none">
+        <category name="Input">
+            <block type="input_value"></block>
+            <block type="input_statement"></block>
+            <block type="input_dummy"></block>
+        </category>
+        <category name="Field">
+            <block type="field_static"></block>
+            <block type="field_input"></block>
+            <block type="field_angle"></block>
+            <block type="field_dropdown"></block>
+            <block type="field_checkbox"></block>
+            <block type="field_colour"></block>
+            <!--
+            Date picker commented out since it increases footprint by 60%.
+            Add it only if you need it.  See also goog.require in blockly.js.
+            <block type="field_date"></block>
+            -->
+            <block type="field_variable"></block>
+            <block type="field_image"></block>
+        </category>
+        <category name="Type">
+            <block type="type_group"></block>
+            <block type="type_null"></block>
+            <block type="type_boolean"></block>
+            <block type="type_number"></block>
+            <block type="type_string"></block>
+            <block type="type_list"></block>
+            <block type="type_other"></block>
+        </category>
+        <category name="Colour" id="colourCategory">
+            <block type="colour_hue"><mutation colour="20"></mutation><field name="HUE">20</field></block>
+            <block type="colour_hue"><mutation colour="65"></mutation><field name="HUE">65</field></block>
+            <block type="colour_hue"><mutation colour="120"></mutation><field name="HUE">120</field></block>
+            <block type="colour_hue"><mutation colour="160"></mutation><field name="HUE">160</field></block>
+            <block type="colour_hue"><mutation colour="210"></mutation><field name="HUE">210</field></block>
+            <block type="colour_hue"><mutation colour="230"></mutation><field name="HUE">230</field></block>
+            <block type="colour_hue"><mutation colour="260"></mutation><field name="HUE">260</field></block>
+            <block type="colour_hue"><mutation colour="290"></mutation><field name="HUE">290</field></block>
+            <block type="colour_hue"><mutation colour="330"></mutation><field name="HUE">330</field></block>
+        </category>
+    </xml>
+
+</body>
+
+
+<script type="text/javascript" src="../javascripts/vendor/BootstrapWizard.js"></script>
+<link rel="stylesheet" href="../stylesheets/vendor/codemirror.css">
+<script src="../javascripts/vendor/codemirror-compressed.js"></script>
+
+<script type="text/javascript">
+
+    var codeEditor;
+
+    $(document).ready(function() {
+        $('#rootwizard').bootstrapWizard({
+            'tabClass': 'nav nav-pills',
+            'onTabShow': function (tab, navigation, index) {
+                if (index == 1) {
+                    var code = document.getElementById('generatorPre').textContent;
+                    document.getElementById('block_code').value = code;
+                    console.log(code);
+                    $('.blocklyToolboxDiv').hide();
+
+                    if (codeEditor == undefined) {
+                        codeEditor = CodeMirror.fromTextArea(block_code, {
+                            lineNumbers: true,
+                            viewportMargin: Infinity
+                        });
+                    } else {
+                        var code = String(document.getElementById('generatorPre').textContent);
+                        console.log(code);
+                        codeEditor.setValue(code);
+                    }
+                }
+            }
+        });
+    });
+
+    function show_toolbox(){
+        $('.blocklyToolboxDiv').show();
+    }
+
+    $('#block-factory-form').submit(function(event){
+        var data = {};
+        var workspace = Blockly.getMainWorkspace();
+        var xml = Blockly.Xml.workspaceToDom(workspace);
+        var workspace_xml = Blockly.Xml.domToText(xml);
+        var name_temp = document.getElementById('languagePre').getElementsByClassName('str')[0].innerText;
+        data.name = name_temp.substring(1, name_temp.length - 1);
+        data.functionality = document.getElementById('block_code').value;
+        data.init_code = workspace_xml;
+        data.structure = document.getElementById('languagePre').textContent;
+        console.log(data);
+        $('#form-structure').val(data.structure);
+        $('#form-name').val(data.name);
+        $('#form-init_code').val(data.init_code);
+    });
+
+</script>
+
+</html>

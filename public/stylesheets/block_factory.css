@@ -1,0 +1,76 @@
+html, body {
+    height: 100%;
+}
+body {
+    background-color: #fff;
+    font-family: sans-serif;
+    margin: 0 5px;
+    overflow: hidden;
+}
+.tab-content{
+    height: 90%;
+}
+.tab-block-style{
+    height: 100%;
+}
+.tab-pane{
+    height: 100%;
+}
+#block-factory-form{
+    height: 100%;
+}
+#rootwizard{
+    height: 100%;
+}
+.tab-pane .form-group{
+    height: 100%;
+}
+table {
+    height: 100%;
+    width: 100%;
+}
+td {
+    vertical-align: top;
+    padding: 0;
+}
+#blockly {
+    position: fixed;
+}
+#preview {
+    position: absolute;
+}
+pre {
+    margin-top: 0;
+    position: absolute;
+    border: #ddd 1px solid;
+    overflow: scroll;
+}
+button {
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background-color: #eee;
+    color: #000;
+    padding: 10px;
+    margin: 0px;
+    font-size: large;
+}
+button:hover {
+    box-shadow: 2px 2px 5px #888;
+}
+button>* {
+    opacity: 0.6;
+    vertical-align: text-bottom;
+    margin: 0;
+}
+button:hover>* {
+    opacity: 1;
+}
+#linkButton {
+    display: none;
+}
+.form-horizontal .form-group {
+    margin: 0;
+}
+.CodeMirror {
+    border: 1px solid grey;
+}

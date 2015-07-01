@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Escolha de ferramentas</title>
+
+    <!-- Bootstrap -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <!--    <link rel="stylesheet" type="text/css" href="styles.css">-->
+
+    <xml id="custom-toolbox" style="display: none" ></xml>
+    <script id="custom-script"></script>
+
+    <style>
+        #mycanvas {
+            height: 500px;
+            width: 500px;
+            background-repeat: no-repeat;
+            background-size: cover;
+            border: 1px solid black;
+        }
+
+        #output{
+            height: 500px;
+        }
+        .CodeMirror {
+            border: 1px solid black;
+        }
+
+        #blockly-sandbox{
+            height: 500px;
+            width: 100%;
+        }
+
+        #blockly-initial-state{
+            height: 500px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div id="error-notification" class="alert alert-dismissible alert-danger" style="display: none; position: fixed; top: 1em; right: 1em; z-index:999;">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <span id="error-text"></span>
+    </div>
+    <div id="success-notification" class="alert alert-dismissible alert-success" style="display: none; position: fixed; top: 1em; right: 1em; z-index:999;">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <strong>Sucesso!</strong> O exercício foi gravado
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <form id="blockly-form" class="form-horizontal" method ="POST">
+                <div class="navbar navbar-default">
+                    <div class="navbar-inner">
+                        <div class="container">
+                            <ul class="nav navbar-nav">
+                                <li><a href="#tab-options" data-toggle="tab">Opções</a></li>
+                                <li><a href="#tab-code" data-toggle="tab">Código</a></li>
+                                <li><a href="#tab-blocks" data-toggle="tab">Blocos</a></li>
+                                <li><a href="#tab-state" data-toggle="tab">Estado inicial</a></li>
+                                <li><a href="#tab-turtle" data-toggle="tab">Tartaruga</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="id_edx" value="<%= edXid %>"/>
+                <div class="tab-content">
+                    <div class="tab-pane" id="tab-options"> <!-- TAB opcoes -->
+                        <div class="form-group">
+                            <label for="textArea" class="col-lg-2 control-label">Enunciado: </label>
+                            <div class="col-lg-10">
+                                <textarea class="form-control" rows="3" id="text"><% if(edit && exercise.text != undefined){%><%= exercise.text %><%}%></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">Tem tartaruga: </label>
+                            <div class="col-lg-10">
+                                <div class="checkbox">
+                                    <input id="turtle-checkbox" type="checkbox" name="turtle" <% if(edit && exercise.turtle != undefined && exercise.turtle){%>checked="checked"<%}%>>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="pull-right">
+                                <button type="submit" class="btn btn-primary save-button">Guardar</button>
+                                <button disabled="disabled" class="btn btn-primary loading-button" style="display: none">A guardar...</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="tab-code"> <!-- TAB codigo -->
+                        <div class="form-group">
+                            <label for="textArea" class="col-lg-2 control-label">Código inicial: </label>
+                            <div class="col-lg-10">
+                                <textarea id="initial_code" class="form-control" rows="3" name="init_python_code"><% if(edit && exercise.init_python_code != undefined){%><%= exercise.init_python_code %><%}%></textarea>
+                                <span class="help-block">Código executado antes do código inserido pelo aluno.</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="textArea" class="col-lg-2 control-label">Código final: </label>
+                            <div class="col-lg-10">
+                                <textarea id="final_code" class="form-control" rows="3" name="final_python_code"><% if(edit  && exercise.final_python_code != undefined){%><%= exercise.final_python_code %><%}%></textarea>
+                                <span class="help-block">Código executado depois do código inserido pelo aluno e antes da validação.</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="textArea" class="col-lg-2 control-label">Código validação: </label>
+                            <div class="col-lg-10">
+                                <textarea id="validation_code" class="form-control" rows="3" name="validation_python_code"><% if(edit && exercise.validation_python_code != undefined){%><%= exercise.validation_python_code %><%}%></textarea>
+                                <span class="help-block">Código utilizado para validar o exercício. Estão disponíveis a variáveis "console", com o resultado apresentado na consola e "img_percentage",
+                                caso exista uma imagem, que representa a percentagem de incorreção da imagem do aluno (0 se a imagem for igual, 100 se for totalmente diferente). Esta função deve retornar um valor booleano (true ou false)</span>
+                            </div>
+                        </div>
+
+
+                        <div class="col-lg-12">
+                            <div class="pull-right">
+                                <button type="submit" class="btn btn-primary save-button">Guardar</button>
+                                <button disabled="disabled" class="btn btn-primary loading-button" style="display: none">A guardar...</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="tab-blocks"> <!-- TAB blocos -->
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                            <% for(var i = 0; i < blocks.length; i++){ %>
+                                <div class="checkbox">
+                                    <label>
+                                        <input class="block-checkbox" name="toolbox[]" type="checkbox" value="<%= blocks[i]._id%>"
+                                                <% if(edit && exercise.toolbox.indexOf(blocks[i]._id) >= 0){%>
+                                                    checked="checked"
+                                                <%}%>> <%= blocks[i].name %>
+                                    </label>
+                                </div>
+                            <%}%>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="pull-right">
+                                <button type="submit" class="btn btn-primary save-button">Guardar</button>
+                                <button disabled="disabled" class="btn btn-primary loading-button" style="display: none">A guardar...</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="tab-state"> <!-- TAB com blockly para definir o estado inicial -->
+                        <input type="hidden" name="initial_state" id="initial-state-hidden"/>
+                        <div id="blockly-initial-state"></div>
+                        <div class="col-lg-12">
+                            <div class="pull-right">
+                                <button type="submit" class="btn btn-primary">Guardar</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="tab-turtle"> <!-- TAB sandbox para formar a imagem inicial -->
+                        <input id="validation-image-input" type="hidden" name="validation_image" <% if(edit && exercise.validation_image != undefined){%> value="<%=exercise.validation_image%>" <%}%>/>
+                        <div class="form-group">
+                            <label for="background-image" class="col-lg-2 control-label">Imagem de fundo</label>
+                            <div class="col-lg-10">
+                                <input name="background_image_url" type="text" class="form-control" id="input-background-image" placeholder="Inserir URL" <% if(edit && exercise.background_image_url != undefined){%> value="<%=exercise.background_image_url%>" <%}%>>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div id="blockly-sandbox"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h2>Imagem</h2>
+                                <canvas id="mycanvas" height="500" width="500"></canvas>
+                            </div>
+                            <div class="col-lg-6">
+                                <h2>Output</h2>
+                                <pre id="output" style="height: 500px"></pre>
+                            </div>
+
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="btn-group pull-right">
+                                <button class="btn btn-success" id="sandbox-execute-code">Executar</button>
+                                <button type="submit" class="btn btn-primary">Guardar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div style="height: 50px"></div>
+</body>
+
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script type="text/javascript" src="../../javascripts/vendor/jquery-2.1.3.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+<script src = "/javascripts/concat.js"></script>
+<script src="/javascripts/wizardB.js"></script>
+
+<script type="text/javascript" src="../javascripts/vendor/skulpt/skulpt.min.js" ></script>
+<script type="text/javascript" src="../javascripts/vendor/skulpt/skulpt-stdlib.js"></script>
+<script type="text/javascript" src="../javascripts/vendor/BootstrapWizard.js"></script>
+<script type="text/javascript" src="../javascripts/exercises/evaluation.js"></script>
+<script src="/javascripts/blockly/blockly_compressed.js"></script>
+<script src="/javascripts/blockly/blocks_compressed.js"></script>
+<script src="/javascripts/blockly/msg/js/pt.js"></script>
+<script src="/javascripts/blockly/python_generator.js"></script>
+
+<link rel="stylesheet" href="../stylesheets/vendor/codemirror.css">
+<script src="../javascripts/vendor/codemirror-compressed.js"></script>
+
+<script type="text/javascript">
+    var initWorkspace, sandboxWorkspace;
+    var initialCodeEditor, finalCodeEditor, validationCodeEditor;
+    $(document).ready(function(){
+
+        function htmlDecode(input) {
+            var e = document.createElement('div');
+            e.innerHTML = input;
+            return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+        }
+        Blockly.pathToMedia = "/blockly-media/";
+
+        var blockIds = [];
+        $('.block-checkbox:checked').map(function(){
+            blockIds.push($(this).attr('value'));
+        });
+        $.ajax({
+            url: '/blocks/list-with-ids',
+            method: 'GET',
+            data: {
+                ids: blockIds
+            },
+            success: function(data){
+                $('#custom-script').html("");
+                $('#custom-toolbox').html("");
+                for(var i = 0; i < data.length; i++){
+                    $('#custom-toolbox').append('<block type="' + data[i].name + '"></block>');
+                    $('#custom-script').append(data[i].structure + '\n' + data[i].functionality);
+                }
+                eval($('#custom-script').text());
+                initWorkspace = Blockly.inject(document.getElementById('blockly-initial-state'),
+                        {
+                            toolbox: document.getElementById('custom-toolbox'),
+                            scrollbars: true,
+                            trashcan: true
+                        });
+                sandboxWorkspace = Blockly.inject(document.getElementById('blockly-sandbox'),
+                        {
+                            toolbox: document.getElementById('custom-toolbox'),
+                            scrollbars: true,
+                            trashcan: true
+                        });
+
+                <% if(edit && exercise.initial_state != undefined) {%>
+                var xml = Blockly.Xml.textToDom(htmlDecode("<%= exercise.initial_state%>"));
+                Blockly.Xml.domToWorkspace(initWorkspace, xml);
+                <%}%>
+            }
+        });
+
+
+        $('#blockly-form').bootstrapWizard({
+            'tabClass': '',
+            onTabShow: function(tab, navigation, index){
+                if(index == 3 || index == 4){//tab do estado inicial ou da sandbox
+                    blockIds = [];
+                    $('.block-checkbox:checked').map(function(){
+                        blockIds.push($(this).attr('value'));
+                    });
+                    //ir buscar os blocos
+                    $.ajax({
+                        url: '/blocks/list-with-ids',
+                        method: 'GET',
+                        data: {
+                            ids: blockIds
+                        },
+                        success: function(data){
+                            $('#custom-script').html("");
+                            $('#custom-toolbox').html("");
+                            for(var i = 0; i < data.length; i++){
+                                $('#custom-toolbox').append('<block type="' + data[i].name + '"></block>');
+                                $('#custom-script').append(data[i].structure + '\n' + data[i].functionality);
+                            }
+                            eval($('#custom-script').text());
+                            initWorkspace.updateToolbox($('#custom-toolbox').get(0));
+                            sandboxWorkspace.updateToolbox($('#custom-toolbox').get(0));
+                        }
+                    });
+                }else if(index == 1){
+                    if (initialCodeEditor == undefined) {
+                        initialCodeEditor = CodeMirror.fromTextArea(initial_code, {
+                            lineNumbers: true,
+                            viewportMargin: Infinity
+                        });
+                    }
+
+                    if (finalCodeEditor == undefined) {
+                        finalCodeEditor = CodeMirror.fromTextArea(final_code, {
+                            lineNumbers: true,
+                            viewportMargin: Infinity
+                        });
+                    }
+
+                    if (validationCodeEditor == undefined) {
+                        validationCodeEditor = CodeMirror.fromTextArea(validation_code, {
+                            lineNumbers: true,
+                            viewportMargin: Infinity
+                        });
+                    }
+                }
+            }
+        });
+        $('#blockly-form').bootstrapWizard('hide', 4);
+
+        $('#block-checkbox').click(function () {
+
+        });
+
+        if($('#turtle-checkbox').is(':checked')){
+            $('#blockly-form').bootstrapWizard('display', 4);
+        };
+
+        $('#turtle-checkbox').click(function() {
+            var $this = $(this);
+            var turtle_default = "import turtle\n"+
+                    "t = turtle.Turtle()\nt.speed(1)\nt.shape(\"turtle\")\n";
+            // $this will contain a reference to the checkbox
+            if ($this.is(':checked')) {
+                $('#blockly-form').bootstrapWizard('display', 4);
+                 if(initialCodeEditor!=undefined){
+                    initialCodeEditor.setValue(turtle_default+
+                    initialCodeEditor.getValue());
+                }else
+                {
+                    $("#initial_code").val(turtle_default+$("#initial_code").val());
+                }
+            } else {
+                $('#blockly-form').bootstrapWizard('hide', 4);
+                if(initialCodeEditor!=undefined){
+                    if(initialCodeEditor.getValue()==turtle_default)
+                    initialCodeEditor.setValue("");
+                }else
+                {
+                    if($("#initial_code").val()==turtle_default)
+                        $("#initial_code").val("");
+                }
+            }
+        });
+
+
+        var blocklyForm = $('#blockly-form')
+        blocklyForm.submit(function(event){
+            event.preventDefault();
+            var xml = Blockly.Xml.workspaceToDom(initWorkspace);
+            $('#initial-state-hidden').val(xml.outerHTML);
+            var selectedBlocks = [];
+            $('.block-checkbox:checked').each(function() {
+                selectedBlocks.push($(this).val());
+            })
+            $.ajax({
+                type: 'POST',
+                data: {
+                    id_edx: $('#id_edx').val(),
+                    text: $('#text').val(),
+                    turtle: $('#turtle-checkbox').is(':checked'),
+                    init_python_code: initialCodeEditor==undefined ? $("#initial_code").val() : initialCodeEditor.getValue(),
+                    initial_state: $('#initial-state-hidden').val(),
+                    final_python_code: finalCodeEditor==undefined ? $("#final_code").val() : finalCodeEditor.getValue(),
+                    validation_python_code: validationCodeEditor==undefined ? $("#validation_code").val() : validationCodeEditor.getValue(),
+                    background_image_url: $('#input-background-image').val(),
+                    validation_image: $('#validation-image-input').val(),
+                    toolbox: selectedBlocks
+                },
+                beforeSend: function(){
+                    $('.save-button').hide();
+                    $('.loading-button').show();
+                    $('#error-notification').hide();
+                    $('#success-notification').hide();
+                },
+                error: function(jqXHR, textStatus, errorThrown){
+                    $('#error-notification').find('#error-text').text(jqXHR.responseText);
+                    $('#error-notification').show();
+                    $('.save-button').show();
+                    $('.loading-button').hide();
+                },
+                success: function(data, textStatus, xhr){
+                    $('#success-notification').show();
+                    $('.save-button').show();
+                    $('.loading-button').hide();
+                }
+            });
+
+        });
+
+
+        $('#sandbox-execute-code').click(function(event){
+            event.preventDefault();
+            var code = "";
+            if(initialCodeEditor != undefined) code += initialCodeEditor.getValue() + "\n";
+            code += Blockly.Python.workspaceToCode(sandboxWorkspace)  + "\n";
+            if(finalCodeEditor != undefined) code += finalCodeEditor.getValue();
+            console.log(code);
+            $('#mycanvas').css('background', "url(" + $('#input-background-image').val() + ") no-repeat");
+            runit(false, code);
+            $('#validation-image-input').val(document.getElementById("mycanvas").toDataURL());
+        });
+    });
+
+</script>
+</html>

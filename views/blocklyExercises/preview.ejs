@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="/javascripts/blockly/blockly_compressed.js"></script>
+    <script src="/javascripts/blockly/blocks_compressed.js"></script>
+    <script src="/javascripts/blockly/msg/js/pt.js"></script>
+    <script src="/javascripts/blockly/javascript_compressed.js"></script>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/javascripts/vendor/bootstrap.min.js"></script>
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <script src = "/javascripts/concat.js"></script>
+    <script src="/javascripts/wizardB.js"></script>
+    
+    <title>Escolha de ferramentas</title>
+
+    <!-- Bootstrap -->
+    <link href="/stylesheets/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/styleBlockly.css">
+<!--    <link rel="stylesheet" type="text/css" href="styles.css">-->
+
+
+    </head>
+   <body>
+
+    
+
+  <table>
+    <tr>
+      <td>
+        <div id="blockly-workspace-header">
+      <div id="toolbox-header" class="workspace-header" style="width: 212.18571472168px;">
+        <span>blocos</span>
+      </div>
+      <div id="clear-puzzle-header" class="workspace-header"><span>Recomeçar</span></div>
+      <div id="workspace-header" class="workspace-header">
+        <span id="workspace-header-span">Workspace:  </span>
+        <div id="block-counter">
+          <div id="blocks-used" class="block-counter">X</div>
+          <span>/</span>
+          <span id="max-blocks">Y</span>
+          <span> blocos</span>
+        </div>
+      </div>
+</div>
+      </td>
+    </tr>
+    <tr>
+      <td id="blocklyArea">
+      </td>
+    </tr>
+  </table>
+
+  <div id="blocklyDiv" style="position: absolute"></div>
+
+ 
+
+    <script>
+      function runJS() {
+        Blockly.JavaScript.addReservedWords('code');
+        var code = Blockly.JavaScript.workspaceToCode();
+        alert(code);
+        try {
+          eval(code);
+        } catch (e) {
+          alert(e);
+        }
+      }
+    </script>
+     <script>
+    var blocklyArea = document.getElementById('blocklyArea');
+    var blocklyDiv = document.getElementById('blocklyDiv');
+    var workspace = Blockly.inject(blocklyDiv,
+        {toolbox: localStorage.getItem('toolbox')});
+    var onresize = function(e) {
+      // Compute the absolute coordinates and dimensions of blocklyArea.
+      var element = blocklyArea;
+      var x = 0;
+      var y = 0;
+      do {
+        x += element.offsetLeft;
+        y += element.offsetTop;
+        element = element.offsetParent;
+      } while (element);
+      // Position blocklyDiv over blocklyArea.
+      blocklyDiv.style.left = x + 'px';
+      blocklyDiv.style.top = y + 'px';
+      blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
+      blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
+    };
+    window.addEventListener('resize', onresize, false);
+    onresize();
+  </script>
+
+    </body>
+    </html>
